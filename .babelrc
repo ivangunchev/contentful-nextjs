@@ -1,0 +1,5 @@
+// Fixes a bug with parsing json
+{
+    "presets": ["next/babel"],
+    "plugins": ["superjson-next"]
+  }
