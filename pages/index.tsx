@@ -17,13 +17,13 @@ export const getStaticProps: GetStaticProps = async () => {
     props: {
       articles: response.items,
     },
+    revalidate: 60,
   };
 };
 
 const Home: NextPage = ({
   articles,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  console.log(articles);
   return (
     <div className={styles.container}>
       <Head>
