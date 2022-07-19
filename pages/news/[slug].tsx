@@ -3,6 +3,14 @@ import Image from "next/image";
 import { createClient } from "contentful";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 
+type ArticleProps = {
+  fields: {
+    slug?: string;
+  };
+  sys: {};
+  metadata: {};
+}
+
 // Contentful client
 const client = createClient({
   space: process.env.SPACE_ID,
@@ -14,9 +22,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
     content_type: "article",
   });
 
-  const paths = response.items.map((item) => {
+  const paths = response.items.map((item: ArticleProps) => {
     return {
       params: {
+        // tslint:disable-next-line
         slug: item.fields.slug,
       },
     };
