@@ -1,23 +1,55 @@
 import type { NextPage, GetStaticProps, InferGetStaticPropsType } from "next";
 import Head from "next/head";
-import { createClient } from "contentful";
 import styles from "../styles/Home.module.css";
 import { ArticleCard } from "../components/ArticleCard/ArticleCard";
+import { fetchContent } from "../utils/contentful/fetchContent";
+import getLocale from "../utils/contentful/getLocale";
 
-export const getStaticProps: GetStaticProps = async () => {
-  // Contentful client
-  const client = createClient({
-    space: process.env.SPACE_ID,
-    accessToken: process.env.ACCESS_TOKEN,
+export type ArticleProps = {
+  sys: {
+    id: string;
+  };
+  title: string;
+  slug: string;
+  category: string;
+  image: string;
+  heroImage: {
+    url: string;
+  };
+};
+
+const GET_ALL_ARTICLES_WITH_LOCALE = `
+  query ($locale: String!) {
+    articleCollection (locale: $locale) {
+      items {
+        sys {
+          id
+        }
+        title
+        slug
+        category
+        heroImage {
+          url
+        }
+      }
+    }
+  }
+`;
+
+export const getStaticProps: GetStaticProps = async (params) => {
+  const { locale } = params;
+  const localeParams = getLocale(locale);
+
+  const data = await fetchContent(GET_ALL_ARTICLES_WITH_LOCALE, {
+    locale: localeParams,
   });
-
-  const response = await client.getEntries({ content_type: "article" });
+  const articles = data.articleCollection.items;
 
   return {
     props: {
-      articles: response.items,
+      articles,
     },
-    revalidate: 60,
+    revalidate: 5,
   };
 };
 
@@ -35,13 +67,13 @@ const Home: NextPage = ({
       <main className={styles.main}>
         <h1 className={styles.title}>Welcome to the Masters</h1>
         {articles &&
-          articles.map((article) => (
+          articles.map((article: ArticleProps) => (
             <ArticleCard
               key={article.sys.id}
-              title={article.fields.title}
-              slug={article.fields.slug}
-              category={article.fields.category}
-              image={article.fields.heroImage.fields.file.url}
+              title={article.title}
+              slug={article.slug}
+              category={article.category}
+              image={article.heroImage.url}
             />
           ))}
       </main>

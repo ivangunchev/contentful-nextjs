@@ -1,0 +1,12 @@
+.container {
+    cursor: pointer;
+    max-width: 300px;
+    height: 300px;
+}
+.imageWrapper {
+    position: relative;
+    height: 200px;
+}
+.articleCard--title {
+    color: violet;
+}

@@ -1,20 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import styles from "./ArticleCard.module.css";
 
-export type ArticleProps = {
-  title: string;
-  slug: string;
-  category: string;
-  image: string;
-};
-
-export const ArticleCard = ({ title, slug, category, image }: ArticleProps) => {
+export const ArticleCard = ({ title, slug, category, image }) => {
   return (
     <Link href={`/news/${slug}`}>
-      <article>
-        <Image src={`https:${image}`} width={100} height={100} />
-        <h3>{title}</h3>
+      <article className={styles.container}>
+        <div className={styles.imageWrapper}>
+          <Image src={image} alt={title} layout="fill" objectFit="cover" />
+        </div>
+        <h3 className={styles.title}>{title}</h3>
         <h4>{category}</h4>
       </article>
     </Link>

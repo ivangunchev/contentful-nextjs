@@ -5,6 +5,13 @@ const nextConfig = {
   images: {
     domains: ["images.ctfassets.net"],
   },
+  experimental: {
+    images: { allowFutureImage: true },
+  },
+  i18n: {
+    locales: ["en", "es"],
+    defaultLocale: "en",
+  },
 };
 
 module.exports = nextConfig;

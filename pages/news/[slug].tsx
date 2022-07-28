@@ -1,80 +1,119 @@
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
-import { createClient } from "contentful";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import { BLOCKS, INLINES } from "@contentful/rich-text-types";
+import { fetchContent } from "../../utils/contentful/fetchContent";
+import getLocale from "../../utils/contentful/getLocale";
 
-type ArticleProps = {
-  fields: {
-    slug?: string;
-  };
-  sys: {};
-  metadata: {};
+const GET_ARTICLE_BY_SLUG = `
+  query ($slug: String!, $locale: String!){
+    articleCollection(where:
+      {slug: $slug
+      }, locale: $locale) {
+      items {
+        title
+        slug
+        category
+        heroImage {
+          url
+          width
+          height
+        }
+        richTextContent {
+          json
+        }
+      }
+    }
+  }
+`;
+
+const GET_ALL_ARTICLE_SLUGS = `
+query {
+  articleCollection {
+    items {
+      slug
+    }
+  }
 }
+`;
 
-// Contentful client
-const client = createClient({
-  space: process.env.SPACE_ID,
-  accessToken: process.env.ACCESS_TOKEN,
-});
+export const getStaticPaths: GetStaticPaths = async (locales) => {
+  const data = await fetchContent(GET_ALL_ARTICLE_SLUGS);
+  const articleSlugs = data.articleCollection.items;
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const response = await client.getEntries({
-    content_type: "article",
-  });
-
-  const paths = response.items.map((item: ArticleProps) => {
-    return {
-      params: {
-        // tslint:disable-next-line
-        slug: item.fields.slug,
-      },
-    };
+  let paths = [];
+  locales.locales.forEach((locale) => {
+    paths = [
+      ...paths,
+      ...articleSlugs.map((articleSlug) => ({
+        params: { slug: articleSlug.slug },
+        locale,
+      })),
+    ];
   });
 
   return {
     paths,
-    // If fallback:true Shows 404 if the path doesn't exist
     fallback: true,
   };
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { items } = await client.getEntries({
-    content_type: "article",
-    "fields.slug": params.slug,
+export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
+  const { slug } = params;
+  const localeParams = getLocale(locale);
+  const data = await fetchContent(GET_ARTICLE_BY_SLUG, {
+    slug,
+    locale: localeParams,
   });
-
-  //   Guard clause for unexisting slugs/pages, redirects to home page
-  if (!items.length) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
+  const [articleData] = data.articleCollection.items;
 
   return {
     props: {
-      article: items[0],
+      article: articleData,
     },
     //   ISR setting in seconds
-    revalidate: 60,
+    revalidate: 5,
   };
+};
+
+const RICH_TEXT_OPTIONS = {
+  renderNode: {
+    [BLOCKS.PARAGRAPH]: (node, children) => {
+      return <p>{children}</p>;
+    },
+    [INLINES.HYPERLINK]: (node, children) => {
+      const { data } = node;
+      return (
+        <a href={data.uri} style={{ color: "darkblue" }}>
+          {children}
+        </a>
+      );
+    },
+    [BLOCKS.UL_LIST]: (node, children) => {
+      return <ul style={{ listStyle: "none" }}>{children}</ul>;
+    },
+  },
 };
 
 const NewsArticle = ({ article }) => {
   // Loading indicator / Skeleton component while fetching data
   if (!article) return <div>Loading...</div>;
 
-  const { title, category, richTextContent } = article.fields;
-  const image = article.fields.heroImage.fields.file.url;
+  const { title, category, heroImage, richTextContent } = article;
   return (
     <article>
-      <Image src={`https:${image}`} layout="fill" objectFit="contain" />
+      <div className="image--wrapper">
+        <Image
+          src={heroImage.url}
+          alt={title}
+          // layout="responsive"
+          width={heroImage.width}
+          height={heroImage.height}
+        />
+      </div>
       <h3>{title}</h3>
       <h4>{category}</h4>
-      <div>{documentToReactComponents(richTextContent)}</div>
+      {documentToReactComponents(richTextContent.json, RICH_TEXT_OPTIONS)}
     </article>
   );
 };

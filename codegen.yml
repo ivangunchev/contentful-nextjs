@@ -1,0 +1,9 @@
+overwrite: true
+schema:
+  - https://graphql.contentful.com/content/v1/spaces/xzk80cxmmf3q/environments/master:
+      headers:
+        Authorization: "Bearer yE1l8zTyIeBuyDwJs5XrV2__1pF7KNOxuN618rmqaw4"
+generates:
+  src/schema.ts:
+    plugins:
+      - typescript
