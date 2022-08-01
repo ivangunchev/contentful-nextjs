@@ -11,7 +11,7 @@ export const ArticleCard = ({ title, slug, category, image }) => {
           <Image src={image} alt={title} layout="fill" objectFit="cover" />
         </div>
         <h3 className={styles.title}>{title}</h3>
-        <h4>{category}</h4>
+        <h4 className={styles.category}>{category}</h4>
       </article>
     </Link>
   );
