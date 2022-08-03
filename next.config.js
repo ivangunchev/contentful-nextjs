@@ -9,7 +9,7 @@ const nextConfig = {
     images: { allowFutureImage: true },
   },
   i18n: {
-    locales: ["en", "es"],
+    locales: ["en"],
     defaultLocale: "en",
   },
 };
