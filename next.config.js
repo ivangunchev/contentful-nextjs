@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ["images.ctfassets.net"],
+    domains: ["res.cloudinary.com"],
   },
   experimental: {
     images: { allowFutureImage: true },

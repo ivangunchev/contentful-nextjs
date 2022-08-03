@@ -1,40 +1,10 @@
-import type { NextPage, GetStaticProps, InferGetStaticPropsType } from "next";
 import Head from "next/head";
-import styles from "../styles/Home.module.css";
-import { ArticleCard } from "../components/ArticleCard/ArticleCard";
+import { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
 import { fetchContent } from "../utils/contentful/fetchContent";
 import getLocale from "../utils/contentful/getLocale";
-
-export type ArticleProps = {
-  sys: {
-    id: string;
-  };
-  title: string;
-  slug: string;
-  category: string;
-  image: string;
-  heroImage: {
-    url: string;
-  };
-};
-
-const GET_ALL_ARTICLES_WITH_LOCALE = `
-  query ($locale: String!) {
-    articleCollection (locale: $locale) {
-      items {
-        sys {
-          id
-        }
-        title
-        slug
-        category
-        heroImage {
-          url
-        }
-      }
-    }
-  }
-`;
+import { GET_ALL_ARTICLES_WITH_LOCALE } from "../queries/contentful/graphqlQueries";
+import ArticleList from "../components/ArticleList/ArticleList";
+import styles from "../styles/Home.module.css";
 
 export const getStaticProps: GetStaticProps = async (params) => {
   const { locale } = params;
@@ -43,7 +13,7 @@ export const getStaticProps: GetStaticProps = async (params) => {
   const data = await fetchContent(GET_ALL_ARTICLES_WITH_LOCALE, {
     locale: localeParams,
   });
-  const articles = data.articleCollection.items;
+  const articles = data.newsArticleCollection.items;
 
   return {
     props: {
@@ -64,19 +34,7 @@ const Home: NextPage = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>Welcome to the Masters</h1>
-        {articles &&
-          articles.map((article: ArticleProps) => (
-            <ArticleCard
-              key={article.sys.id}
-              title={article.title}
-              slug={article.slug}
-              category={article.category}
-              image={article.heroImage.url}
-            />
-          ))}
-      </main>
+      <ArticleList articles={articles} />
     </div>
   );
 };

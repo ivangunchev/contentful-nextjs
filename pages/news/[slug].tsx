@@ -4,42 +4,66 @@ import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
 import { BLOCKS, INLINES } from "@contentful/rich-text-types";
 import { fetchContent } from "../../utils/contentful/fetchContent";
 import getLocale from "../../utils/contentful/getLocale";
+import styles from "./[slug].module.css";
+import {
+  GET_ALL_ARTICLE_SLUGS,
+  GET_ARTICLE_BY_SLUG,
+} from "../../queries/contentful/graphqlQueries";
 
-const GET_ARTICLE_BY_SLUG = `
-  query ($slug: String!, $locale: String!){
-    articleCollection(where:
-      {slug: $slug
-      }, locale: $locale) {
-      items {
-        title
-        slug
-        category
-        heroImage {
-          url
-          width
-          height
-        }
-        richTextContent {
-          json
-        }
-      }
-    }
-  }
-`;
+const RICH_TEXT_OPTIONS = {
+  renderNode: {
+    [BLOCKS.PARAGRAPH]: (node, children) => {
+      return <p>{children}</p>;
+    },
+    [INLINES.HYPERLINK]: (node, children) => {
+      const { data } = node;
+      return (
+        <a href={data.uri} style={{ color: "darkblue" }}>
+          {children}
+        </a>
+      );
+    },
+    [BLOCKS.UL_LIST]: (node, children) => {
+      return <ul style={{ listStyle: "none" }}>{children}</ul>;
+    },
+  },
+};
 
-const GET_ALL_ARTICLE_SLUGS = `
-query {
-  articleCollection {
-    items {
-      slug
-    }
-  }
-}
-`;
+const NewsArticle = ({ article }) => {
+  // Loading indicator / Skeleton component while fetching data
+  if (!article) return <div>Loading...</div>;
+
+  const { headline, columnist, publishDate, image, articleCopy } = article;
+  return (
+    <article>
+      <div className={styles.articleImage}>
+        <Image
+          src={image[0].url}
+          alt={headline}
+          layout="fill"
+          objectFit="cover"
+          width={image[0].width}
+          height={image[0].height}
+        />
+      </div>
+      <div className={styles.articleHeader}>
+        <h2 className={styles.articleTitle}>{headline}</h2>
+        <h5>
+          By {columnist.name} / {publishDate.slice(0, 10)}
+        </h5>
+      </div>
+      <div className={styles.articleBody}>
+        {documentToReactComponents(articleCopy.json, RICH_TEXT_OPTIONS)}
+      </div>
+    </article>
+  );
+};
+
+export default NewsArticle;
 
 export const getStaticPaths: GetStaticPaths = async (locales) => {
   const data = await fetchContent(GET_ALL_ARTICLE_SLUGS);
-  const articleSlugs = data.articleCollection.items;
+  const articleSlugs = data.newsArticleCollection.items;
 
   let paths = [];
   locales.locales.forEach((locale) => {
@@ -65,7 +89,7 @@ export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
     slug,
     locale: localeParams,
   });
-  const [articleData] = data.articleCollection.items;
+  const [articleData] = data.newsArticleCollection.items;
 
   return {
     props: {
@@ -75,47 +99,3 @@ export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
     revalidate: 5,
   };
 };
-
-const RICH_TEXT_OPTIONS = {
-  renderNode: {
-    [BLOCKS.PARAGRAPH]: (node, children) => {
-      return <p>{children}</p>;
-    },
-    [INLINES.HYPERLINK]: (node, children) => {
-      const { data } = node;
-      return (
-        <a href={data.uri} style={{ color: "darkblue" }}>
-          {children}
-        </a>
-      );
-    },
-    [BLOCKS.UL_LIST]: (node, children) => {
-      return <ul style={{ listStyle: "none" }}>{children}</ul>;
-    },
-  },
-};
-
-const NewsArticle = ({ article }) => {
-  // Loading indicator / Skeleton component while fetching data
-  if (!article) return <div>Loading...</div>;
-
-  const { title, category, heroImage, richTextContent } = article;
-  return (
-    <article>
-      <div className="image--wrapper">
-        <Image
-          src={heroImage.url}
-          alt={title}
-          // layout="responsive"
-          width={heroImage.width}
-          height={heroImage.height}
-        />
-      </div>
-      <h3>{title}</h3>
-      <h4>{category}</h4>
-      {documentToReactComponents(richTextContent.json, RICH_TEXT_OPTIONS)}
-    </article>
-  );
-};
-
-export default NewsArticle;
