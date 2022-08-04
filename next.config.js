@@ -5,9 +5,6 @@ const nextConfig = {
   images: {
     domains: ["res.cloudinary.com"],
   },
-  experimental: {
-    images: { allowFutureImage: true },
-  },
   i18n: {
     locales: ["en"],
     defaultLocale: "en",
