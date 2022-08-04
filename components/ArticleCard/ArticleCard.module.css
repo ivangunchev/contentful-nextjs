@@ -3,11 +3,13 @@
     max-width: 300px;
     height: 300px;
     margin-bottom: 1em;
+    background-color: white;
 }
 .imageWrapper {
     position: relative;
     height: 200px;
 }
-.category {
-    color: darkblue
+.title {
+    color: var(--green);
+    padding: 0.5em;
 }

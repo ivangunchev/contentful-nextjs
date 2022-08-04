@@ -1,3 +1,7 @@
+:root {
+  --green: #006747;
+  --lightGray: #f2f2f1;
+}
 @import url('https://fonts.googleapis.com/css2?family=Lora:wght@500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap');
 html,
@@ -8,7 +12,10 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 main {
-  padding: 8px;
+  width:  100%;
+  padding: 1em;
+  background-color: var(--lightGray);
+  min-height: 100vh;
 }
 a {
   color: inherit;

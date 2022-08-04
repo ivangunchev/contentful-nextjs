@@ -31,7 +31,7 @@ const RICH_TEXT_OPTIONS = {
 
 const NewsArticle = ({ article }) => {
   // Loading indicator / Skeleton component while fetching data
-  if (!article) return <div>Loading...</div>;
+  // if (!article) return <div>Loading...</div>;
 
   const { headline, columnist, publishDate, image, articleCopy } = article;
   return (
