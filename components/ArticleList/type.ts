@@ -1,4 +1,4 @@
-export type ArticleProps = {
+export type Article = {
   sys: {
     id: string;
   };
@@ -11,4 +11,10 @@ export type ArticleProps = {
     width: number;
   };
   publishDate: string;
+  columnist?: { name: string };
+  articleCopy?: any;
+};
+
+export type ArticleProps = {
+  article: Article;
 };

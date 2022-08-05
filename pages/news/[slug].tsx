@@ -9,6 +9,7 @@ import {
   GET_ALL_ARTICLE_SLUGS,
   GET_ARTICLE_BY_SLUG,
 } from "../../queries/contentful/graphqlQueries";
+import { ArticleProps } from "../../components/ArticleList/type";
 
 export const getStaticPaths: GetStaticPaths = async (locales) => {
   const data = await fetchContent(GET_ALL_ARTICLE_SLUGS);
@@ -39,7 +40,6 @@ export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
     locale: localeParams,
   });
   const [articleData] = data.newsArticleCollection.items;
-
   return {
     props: {
       article: articleData,
@@ -68,7 +68,7 @@ const RICH_TEXT_OPTIONS = {
   },
 };
 
-const NewsArticle = ({ article }) => {
+const NewsArticle = ({ article }: ArticleProps) => {
   const { headline, columnist, publishDate, image, articleCopy } = article;
   return (
     <article>

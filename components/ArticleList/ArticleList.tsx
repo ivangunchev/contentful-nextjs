@@ -1,6 +1,6 @@
 import React from "react";
 import { ArticleCard } from "../ArticleCard/ArticleCard";
-import { ArticleProps } from "./type";
+import { Article } from "./type";
 import styles from "./ArticleList.module.css";
 
 const ArticleList = ({ articles }) => {
@@ -10,7 +10,7 @@ const ArticleList = ({ articles }) => {
       {articles.length === 0 && <div>No articles</div>}
       <ul className={styles.list}>
         {articles &&
-          articles.map((article: ArticleProps) => (
+          articles.map((article: Article) => (
             <li key={article.sys.id}>
               <ArticleCard
                 title={article.headline}
