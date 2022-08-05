@@ -10,6 +10,45 @@ import {
   GET_ARTICLE_BY_SLUG,
 } from "../../queries/contentful/graphqlQueries";
 
+export const getStaticPaths: GetStaticPaths = async (locales) => {
+  const data = await fetchContent(GET_ALL_ARTICLE_SLUGS);
+  const articleSlugs = data.newsArticleCollection.items;
+
+  let paths = [];
+  locales.locales.forEach((locale) => {
+    paths = [
+      ...paths,
+      ...articleSlugs.map((articleSlug) => ({
+        params: { slug: articleSlug.slug },
+        locale,
+      })),
+    ];
+  });
+
+  return {
+    paths,
+    fallback: true,
+  };
+};
+
+export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
+  const { slug } = params;
+  const localeParams = getLocale(locale);
+  const data = await fetchContent(GET_ARTICLE_BY_SLUG, {
+    slug,
+    locale: localeParams,
+  });
+  const [articleData] = data.newsArticleCollection.items;
+
+  return {
+    props: {
+      article: articleData,
+    },
+    //   ISR setting in seconds
+    revalidate: 5,
+  };
+};
+
 const RICH_TEXT_OPTIONS = {
   renderNode: {
     [BLOCKS.PARAGRAPH]: (node, children) => {
@@ -57,42 +96,3 @@ const NewsArticle = ({ article }) => {
 };
 
 export default NewsArticle;
-
-export const getStaticPaths: GetStaticPaths = async (locales) => {
-  const data = await fetchContent(GET_ALL_ARTICLE_SLUGS);
-  const articleSlugs = data.newsArticleCollection.items;
-
-  let paths = [];
-  locales.locales.forEach((locale) => {
-    paths = [
-      ...paths,
-      ...articleSlugs.map((articleSlug) => ({
-        params: { slug: articleSlug.slug },
-        locale,
-      })),
-    ];
-  });
-
-  return {
-    paths,
-    fallback: true,
-  };
-};
-
-export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
-  const { slug } = params;
-  const localeParams = getLocale(locale);
-  const data = await fetchContent(GET_ARTICLE_BY_SLUG, {
-    slug,
-    locale: localeParams,
-  });
-  const [articleData] = data.newsArticleCollection.items;
-
-  return {
-    props: {
-      article: articleData,
-    },
-    //   ISR setting in seconds
-    revalidate: 5,
-  };
-};

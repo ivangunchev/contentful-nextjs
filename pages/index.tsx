@@ -14,7 +14,6 @@ export const getStaticProps: GetStaticProps = async (params) => {
     locale: localeParams,
   });
   const articles = data.newsArticleCollection.items;
-
   return {
     props: {
       articles,
