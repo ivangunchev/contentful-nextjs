@@ -1,4 +1,4 @@
-import { GetStaticPaths, GetStaticProps } from "next";
+import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import Image from "next/image";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { BLOCKS, INLINES } from "@contentful/rich-text-types";
@@ -9,7 +9,7 @@ import {
   GET_ALL_ARTICLE_SLUGS,
   GET_ARTICLE_BY_SLUG,
 } from "../../queries/contentful/graphqlQueries";
-import { ArticleProps } from "../../components/ArticleList/type";
+import { Article } from "../../components/ArticleList/type";
 
 const RICH_TEXT_OPTIONS = {
   renderNode: {
@@ -29,8 +29,27 @@ const RICH_TEXT_OPTIONS = {
     },
   },
 };
+export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
+  const { slug } = params;
+  const localeParams = getLocale(locale);
+  const data = await fetchContent(GET_ARTICLE_BY_SLUG, {
+    slug,
+    locale: localeParams,
+  });
+  const articleData: Article | null = data.newsArticleCollection.items[0];
+  return {
+    props: {
+      article: articleData,
+    },
+    //   ISR setting in seconds
+    revalidate: 5,
+  };
+};
 
-const NewsArticle = ({ article }: ArticleProps) => {
+const NewsArticle = ({
+  article,
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
+  if (!article) return <div>Nada</div>;
   const { headline, columnist, publishDate, image, articleCopy } = article;
   return (
     <article>
@@ -55,8 +74,6 @@ const NewsArticle = ({ article }: ArticleProps) => {
   );
 };
 
-export default NewsArticle;
-
 export const getStaticPaths: GetStaticPaths = async (locales) => {
   const data = await fetchContent(GET_ALL_ARTICLE_SLUGS);
   const articleSlugs = data.newsArticleCollection.items;
@@ -77,20 +94,4 @@ export const getStaticPaths: GetStaticPaths = async (locales) => {
   };
 };
 
-export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
-  const { slug } = params;
-  const localeParams = getLocale(locale);
-  const data = await fetchContent(GET_ARTICLE_BY_SLUG, {
-    slug,
-    locale: localeParams,
-  });
-  const [articleData] = data.newsArticleCollection.items;
-
-  return {
-    props: {
-      article: articleData,
-    },
-    //   ISR setting in seconds
-    revalidate: 5,
-  };
-};
+export default NewsArticle;
