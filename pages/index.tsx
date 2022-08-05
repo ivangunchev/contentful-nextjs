@@ -1,10 +1,11 @@
 import Head from "next/head";
-import { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
+import { GetStaticProps, NextPage } from "next";
 import { fetchContent } from "../utils/contentful/fetchContent";
 import getLocale from "../utils/contentful/getLocale";
 import { GET_ALL_ARTICLES_WITH_LOCALE } from "../queries/contentful/graphqlQueries";
 import ArticleList from "../components/ArticleList/ArticleList";
 import styles from "../styles/Home.module.css";
+import { ArticlesProps } from "../components/ArticleList/type";
 
 export const getStaticProps: GetStaticProps = async (params) => {
   const { locale } = params;
@@ -22,9 +23,7 @@ export const getStaticProps: GetStaticProps = async (params) => {
   };
 };
 
-const Home: NextPage = ({
-  articles,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+const Home: NextPage = ({ articles }: ArticlesProps) => {
   return (
     <div className={styles.container}>
       <Head>

@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { ArticleCardProps } from "../ArticleList/type";
 import styles from "./ArticleCard.module.css";
 
-export const ArticleCard = ({ title, slug, image, date }) => {
+export const ArticleCard = ({ title, slug, image, date }: ArticleCardProps) => {
   return (
     <Link href={`/news/${slug}`}>
       <article className={styles.container}>

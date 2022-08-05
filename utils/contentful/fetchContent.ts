@@ -1,11 +1,11 @@
 export const fetchContent = async (query: string, params?: {}) => {
   try {
     const res = await fetch(
-      `https://graphql.contentful.com/content/v1/spaces/${process.env.SPACE_ID}/environments/master`,
+      `https://graphql.contentful.com/content/v1/spaces/${process.env.CONTENTFUL_SPACE_ID}/environments/master`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
+          Authorization: `Bearer ${process.env.CONTENTFUL_ACCESS_TOKEN}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({

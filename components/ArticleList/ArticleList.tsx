@@ -1,9 +1,9 @@
 import React from "react";
 import { ArticleCard } from "../ArticleCard/ArticleCard";
-import { Article } from "./type";
+import { Article, ArticlesProps } from "./type";
 import styles from "./ArticleList.module.css";
 
-const ArticleList = ({ articles }) => {
+const ArticleList = ({ articles }: ArticlesProps) => {
   return (
     <section>
       <h2 className={styles.sectionTitle}>Latest News</h2>

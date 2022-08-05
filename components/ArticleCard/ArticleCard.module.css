@@ -16,6 +16,9 @@
     font-family: 'Lora', serif;
     font-weight: 300;
     line-height: 1.375em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .date {
     color: darkgray;
