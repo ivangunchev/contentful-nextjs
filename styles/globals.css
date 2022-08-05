@@ -8,14 +8,14 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, Benton Sans, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
 }
 main {
   width:  100%;
   padding: 1em;
   background-color: var(--lightGray);
-  min-height: 100vh;
+  min-height: calc(100vh - 42px);
 }
 a {
   color: inherit;

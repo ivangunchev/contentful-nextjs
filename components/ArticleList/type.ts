@@ -10,4 +10,5 @@ export type ArticleProps = {
     height: number;
     width: number;
   };
+  publishDate: string;
 };

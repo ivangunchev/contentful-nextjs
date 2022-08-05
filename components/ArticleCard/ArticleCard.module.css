@@ -1,15 +1,25 @@
 .container {
     cursor: pointer;
-    max-width: 300px;
-    height: 300px;
+    min-height: 300px;
     margin-bottom: 1em;
     background-color: white;
+    text-align: center;
+    padding-bottom: 1em;
 }
 .imageWrapper {
     position: relative;
-    height: 200px;
+    min-height: 300px;
 }
 .title {
     color: var(--green);
     padding: 0.5em;
+    font-family: 'Lora', serif;
+    font-weight: 300;
+    line-height: 1.375em;
+}
+.date {
+    color: darkgray;
+    font-size: 0.75rem;
+    font-weight: 400;
+    margin: 1em 0 0.25em 0;
 }

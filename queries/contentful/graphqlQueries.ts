@@ -10,7 +10,8 @@ query ($locale: String!) {
       category {
         name
       }
-      image 
+      image
+      publishDate 
     }
   }
 }
