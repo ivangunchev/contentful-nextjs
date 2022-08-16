@@ -28,4 +28,5 @@ export type ArticleProps = {
 
 export type ArticlesProps = {
   articles: Article[] | null;
+  composition?: any;
 };

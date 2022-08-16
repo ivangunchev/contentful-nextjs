@@ -12,6 +12,9 @@
   "dependencies": {
     "@contentful/rich-text-react-renderer": "^15.12.1",
     "@contentful/rich-text-types": "^15.12.1",
+    "@uniformdev/canvas": "^17.0.0",
+    "@uniformdev/canvas-contentful": "^17.0.0",
+    "@uniformdev/canvas-react": "^17.0.0",
     "contentful": "^9.1.32",
     "next": "12.2.2",
     "react": "18.2.0",

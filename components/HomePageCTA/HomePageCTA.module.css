@@ -1,0 +1,32 @@
+.ctaContainer {
+    max-width: fit-content;
+    margin: 1em 0;
+    border: 2px solid var(--green);
+    background-color: white;
+    border-radius: 10px;
+    padding: 1em;
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
+.ctaTitle {
+    font-size: 1.875em;
+    color: black;
+}
+.ctaBody {
+    margin-top: 0.5em;
+}
+.ctaLink {
+    background-color: var(--green);
+    font-size: 1.25rem;
+    color: white;
+    padding: 0.5em;
+    border-radius: 10px;
+}
+@media only screen and (max-width: 768px) {
+    .ctaContainer {
+        max-width: 100%;
+        flex-direction: column;
+        
+    }
+}
