@@ -42,7 +42,7 @@ export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
       article: articleData,
     },
     //   ISR setting in seconds
-    revalidate: 5,
+    // revalidate: 5,
   };
 };
 

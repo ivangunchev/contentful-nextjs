@@ -9,13 +9,13 @@ export default async function handler(
   //     return res.status(401).json({ message: "Invalid token" });
   //   }
   const { slug } = req.body;
-  const path = slug[Object.keys(slug)[0]];
+  const path = slug["en-US"];
 
   try {
     // this should be the actual path not a rewritten path
     // e.g. for "/blog/[slug]" this should be "/blog/post-1"
     await res.revalidate(`/news/${path}`);
-    return res.json({ revalidated: true });
+    return res.json({ revalidated: path });
   } catch (err) {
     // If there was an error, Next.js will continue
     // to show the last successfully generated page
