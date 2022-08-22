@@ -10,25 +10,71 @@ import {
   GET_ARTICLE_BY_SLUG,
 } from "../../queries/contentful/graphqlQueries";
 import { Article } from "../../components/ArticleList/type";
+import Quote from "../../components/Quote/Quote";
 
-const RICH_TEXT_OPTIONS = {
-  renderNode: {
-    [BLOCKS.PARAGRAPH]: (node, children) => {
-      return <p>{children}</p>;
+// const RICH_TEXT_OPTIONS = {
+//   renderNode: {
+//     [BLOCKS.PARAGRAPH]: (node, children) => {
+//       return <p>{children}</p>;
+//     },
+//     [INLINES.HYPERLINK]: (node, children) => {
+//       const { data } = node;
+//       return (
+//         <a href={data.uri} style={{ color: "darkblue" }}>
+//           {children}
+//         </a>
+//       );
+//     },
+//     [BLOCKS.UL_LIST]: (_node, children) => {
+//       return <ul style={{ listStyle: "none" }}>{children}</ul>;
+//     },
+//   },
+// };
+
+// Create a bespoke renderOptions object to target BLOCKS.EMBEDDED_ENTRY (linked block entries e.g. code blocks)
+// INLINES.EMBEDDED_ENTRY (linked inline entries e.g. a reference to another blog post)
+// and BLOCKS.EMBEDDED_ASSET (linked assets e.g. images)
+
+function renderOptions(links: any) {
+  // create an entry map
+  const entryMap = new Map();
+  // loop through the block linked entries and add them to the map
+  links.entries.block.forEach((entry) => entryMap.set(entry.sys.id, entry));
+
+  // // loop through the inline linked entries and add them to the map
+  // links.entries.inline.forEach((entry) => entryMap.set(entry.sys.id, entry));
+
+  return {
+    renderNode: {
+      [BLOCKS.EMBEDDED_ENTRY]: (node) => {
+        // find the entry in the entryMap by ID
+        const { data } = node;
+        const entry = entryMap.get(data.target.sys.id);
+
+        // render the entries as needed
+        // eslint-disable-next-line no-underscore-dangle
+        if (entry.__typename === "Quote") {
+          return <Quote text={entry.text} author={entry.author} />;
+        }
+      },
+      [BLOCKS.PARAGRAPH]: (_node, children) => {
+        return <p>{children}</p>;
+      },
+      [INLINES.HYPERLINK]: (node, children) => {
+        const { data } = node;
+        return (
+          <a href={data.uri} style={{ color: "darkblue" }}>
+            {children}
+          </a>
+        );
+      },
+      [BLOCKS.UL_LIST]: (_node, children) => {
+        return <ul style={{ listStyle: "none" }}>{children}</ul>;
+      },
     },
-    [INLINES.HYPERLINK]: (node, children) => {
-      const { data } = node;
-      return (
-        <a href={data.uri} style={{ color: "darkblue" }}>
-          {children}
-        </a>
-      );
-    },
-    [BLOCKS.UL_LIST]: (node, children) => {
-      return <ul style={{ listStyle: "none" }}>{children}</ul>;
-    },
-  },
-};
+  };
+}
+
 export const getStaticProps: GetStaticProps = async ({ params, locale }) => {
   const { slug } = params;
   const localeParams = getLocale(locale);
@@ -51,6 +97,7 @@ const NewsArticle = ({
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   if (!article) return <div>Nada</div>;
   const { headline, columnist, publishDate, image, articleCopy } = article;
+  // const {author, text} = article.articleCopy.links.entries.block[0];
   return (
     <article>
       <div className={styles.articleImage}>
@@ -68,7 +115,10 @@ const NewsArticle = ({
         </h5>
       </div>
       <div className={styles.articleBody}>
-        {documentToReactComponents(articleCopy.json, RICH_TEXT_OPTIONS)}
+        {documentToReactComponents(
+          articleCopy.json,
+          renderOptions(articleCopy.links)
+        )}
       </div>
     </article>
   );

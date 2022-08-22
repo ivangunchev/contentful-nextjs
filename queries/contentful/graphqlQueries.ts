@@ -19,7 +19,7 @@ query ($locale: String!) {
 
 export const GET_ARTICLE_BY_SLUG = `
   query ($slug: String!, $locale: String!){
-    newsArticleCollection(where:
+    newsArticleCollection(limit: 1, where:
       {slug: $slug
       }, locale: $locale) {
         items {
@@ -27,6 +27,21 @@ export const GET_ARTICLE_BY_SLUG = `
           slug
           articleCopy {
             json
+            links {
+              entries {
+                block{
+                  sys {
+                    id
+                  }
+                  __typename
+                  ... on Quote {
+                    text
+                    author
+                  }
+                  
+                }
+              }
+            }
           }
           image
           publishDate
