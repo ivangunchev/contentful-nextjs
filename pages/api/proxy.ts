@@ -12,7 +12,7 @@ export default async function handler(
     res.json({ accessToken, tokenType });
 
     const response = await fetch(
-      `https://cms.api.brightcove.com/v1/accounts/${process.env.BRIGHTCOVE_ACCOUNT_ID}/`,
+      `https://cms.api.brightcove.com/v1/accounts/${process.env.BRIGHTCOVE_ACCOUNT_ID}/folders`,
       {
         headers: {
           Authorization: `${tokenType} ${accessToken}`,
